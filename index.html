@@ -1,0 +1,319 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Loading Screen</title>
+		<style>
+			body
+			{
+				background-image: url("Images/casino.png");
+				background-repeat: no-repeat;
+				background-size: cover;
+				overflow: hidden;
+			}
+			h1
+			{
+				position: absolute;
+				left: 15%;
+				top: 20vh;
+				font: 48pt comic sans ms;
+				color: white;
+			}
+			h1 span
+			{
+				text-decoration: line-through;
+				text-decoration-color: inherit;
+			}
+			.animationCircleCSS
+			{
+				position: absolute;
+				border-radius: 50%;
+				top: 48%;
+				left: 50%;
+				width: 2%;
+				height: 2%;
+				animation-name: spinbiggen;
+				animation-fill-mode: forwards;
+				animation-duration: 3s;
+				background-color: black;
+			}
+			#decisionButtonHTML
+			{
+				padding: 4px;
+				font: 18pt calibri light;
+				background-color: gold;
+				border: 2px outset orange;
+				opacity: 0.8;
+				position: absolute;
+				left: 80%;
+				top: 80%;
+			}
+			#optionRectangleHTML
+			{
+				position: absolute;
+				background-image: url("Images/blueprint.jpg");
+				background-repeat: none;
+				background-size: cover;
+				top: 1%;
+				left: 50%;
+				animation-name: dropDown, stretched;
+				animation-fill-mode: forwards, forwards;
+				animation-duration: 3s, 3s;
+				animation-delay: 0s, 3s;
+				background-color: white;
+				width: 1%;
+				height: 40vh;
+			}
+			.selectionScreenTitleCSS, .selectImage0, .selectButtonCSS3, .selectButtonCSS4, .selectButtonCSS5, .proceedButtonCSS
+			{
+				animation-name: pop;
+				animation-duration: 2s;
+				animation-fill-mode: forwards;
+			}
+			.selectionScreenTitleCSS
+			{
+				position: relative;
+				text-align: center;
+				font: 36pt comic sans ms;
+				top: 5%;
+				color: white;
+			}
+			.selectImage0
+			{
+				position: absolute;
+				top: 20%;
+				left: 35%;
+				border-radius: 50%;
+				width: 30%;
+			}
+			.selectButtonCSS3, .selectButtonCSS4, .selectButtonCSS5, .proceedButtonCSS
+			{
+				cursor: pointer;
+				outline: none;
+				position: absolute;
+				top: 85vh;
+				padding: 4px;
+				font: 24pt trebuchet ms;
+				border: 2px outset #0398fc;
+				background-color: transparent;
+				color: lightgrey;
+				width: 10%;
+			}
+			.selectButtonCSS3:focus, .selectButtonCSS4:focus, .selectButtonCSS5:focus
+			{
+				background-color: #42bcf5;
+			}
+			.selectButtonCSS3
+			{
+				left: 33%;
+			}
+			.selectButtonCSS4
+			{
+				left: 45%;
+			}
+			.selectButtonCSS5
+			{
+				left: 57%;
+			}
+			.proceedButtonCSS
+			{
+				right: 12%;
+				background-color: #43bcf5;
+			}
+			.proceedButtonCSS:hover
+			{
+				background-color: #95d6f5;
+			}
+			.fadeCSS
+			{
+				animation-name: fade;
+				animation-duration: 3s;
+				animation-fill-mode: forwards;
+			}
+			.fadeInCSS
+			{
+				position: relative;
+				animation-name: fade;
+				animation-fill-mode: forwards;
+				animation-direction: reverse;
+				z-index: 5;
+				animation-duration: 3s;
+			}
+			#instructionImg1
+			{
+				position: absolute;
+				border: 1px outset lightgrey;
+				top: 50vh;
+				left: 15%;
+			}
+			#instructionsImg2
+			{
+				position: absolute;
+				border-right: 1px outset lightgrey;
+				top: 20vh;
+				left: 42%;
+				width: 55%;
+			}
+			#boxDiv
+			{
+				position: absolute;
+				border-right: 10px solid white;
+				border-radius: 4px;
+				height: 70vh;
+				right: 60%;
+				top: 15vh;
+			}
+		</style>
+		<link href="animations.css" rel="stylesheet" />
+		<script>
+			function initialize() {
+				decisionButton = document.getElementById("decisionButtonHTML");
+				playerCountDecision = 0;
+				ruleDiv = document.getElementById("ruleDivHTML");
+			}
+			function display() {
+				
+			}
+			function circle() { //Creates a circle with animation that appears
+				let tempCircle = document.createElement("div");
+				tempCircle.className = "animationCircleCSS";
+
+				document.body.appendChild(tempCircle);
+
+				window.setTimeout(optionScreen, 3000);
+				
+				window.setTimeout(function() {
+					tempCircle.remove();
+				}, 9000)
+
+			}
+			function optionScreen() { //Displays the option screen
+				let tempRectangle = document.createElement("div");
+				tempRectangle.id = "optionRectangleHTML";
+
+				document.body.appendChild(tempRectangle);
+
+				window.setTimeout(displayScreenOptions, 6000, tempRectangle);
+			}
+			function displayScreenOptions(optionRectangle) { //Displays the buttons on the option screen
+
+				//The array lists their index, so we can convert the numbers in the for loop when creating event listeners for the buttons
+				let numberArray = ["zero", "one", "two", "three", "four", "five"]; 
+
+				let tempTitle = document.createElement("div");
+				tempTitle.className = "selectionScreenTitleCSS";
+				tempTitle.innerHTML = "Select Player Number";
+
+				let tempImg = document.createElement("img");
+				tempImg.className = "selectImage0";
+				tempImg.src = "Images/thonk.png";
+
+				for (let i=3; i<6; i++) //Uses a for loop to create buttons for 3, 4, and 5 players
+				{
+					let tempButton = document.createElement("button");
+					tempButton.className = `selectButtonCSS${i}`;
+					tempButton.innerHTML = `${i} Players`;
+					optionRectangle.inProcess = false; //Boolean assures that you can't spam click the buttons
+
+					//When the buttons are clicked, display the images, continue button, and update the current player choice
+					tempButton.addEventListener("click", function() { 
+						if (!optionRectangle.inProcess)
+						{
+							displayPlayerCount(numberArray[i], optionRectangle);
+							optionRectangle.inProcess = true;
+
+							window.setTimeout(function() { //After the animation is done, return the process to false
+								optionRectangle.inProcess = false;
+							}, 2000);
+						}
+					}); 
+
+					optionRectangle.appendChild(tempButton);
+				}
+
+				optionRectangle.appendChild(tempTitle);
+				optionRectangle.appendChild(tempImg);
+			}
+			function displayPlayerCount(playerCount, optionRectangle) //Displays the new picture for 3, 4, and 5 players, while getting rid of the old photos
+			{
+				//At this point, there should only be one element with selectImage0 and proceedButtonCSS. Select that so we can delete it later.
+				let uselessImg = document.getElementsByClassName("selectImage0")[0]; 
+				try
+				{
+					var uselessProceedButton = document.getElementsByClassName("proceedButtonCSS")[0];
+				}
+				catch
+				{
+					console.log("First proceed btn created");
+				}
+
+				//Get player count number
+				playerCountDecision = playerCount;
+
+				//Create the image and add the animation
+				let tempImg = document.createElement("img");
+				tempImg.src = `Images/${playerCount}People.jpg`;
+				tempImg.className = "selectImage0";
+
+				optionRectangle.appendChild(tempImg);
+
+				window.setTimeout(function() { //Asynchronously remove the useless image, adds proceed button, and removes proceed button as well
+					uselessImg.remove();
+
+					let proceedButton = document.createElement("button"); //Creates a proceed button to let them continue
+					proceedButton.className = "proceedButtonCSS";
+					proceedButton.innerHTML = "=>";
+
+					proceedButton.addEventListener("click", function() { //Stores how many players the user chooses to fight against
+						localStorage.playerNum = playerCount;
+
+						//Fades all the children of the optionRectangle element
+
+						for (var i=0; i<optionRectangle.children.length; i++)
+						{
+							let optionChildren = optionRectangle.children[i];
+							optionChildren.classList.add("fadeCSS");
+
+							window.setTimeout(function() {
+								optionChildren.remove();
+							}, 3000)
+						}
+						window.setTimeout(displayRules, 3000);
+					})
+
+					optionRectangle.appendChild(proceedButton);
+
+					window.setTimeout(function() { //Removes the old proceed button
+						try
+						{
+							uselessProceedButton.remove();
+						}
+						catch
+						{
+							console.log("Yes I know it's the first proceed button you console snooper. \
+							If you want to snoop maybe head down to the Staten Island Landfill.");
+						}
+					}, 2000);
+				}, 2000);
+			}
+			function displayRules() 
+			{
+				ruleDiv.style.visibility = "visible";
+				ruleDiv.className = "fadeInCSS";
+			}
+		</script>
+	</head>
+	<body onload="initialize();">
+		<button id="decisionButtonHTML" onclick="circle();">New Game</button>
+		<h1><span>Bluff Stuff</span> <br />
+		BULLSHIT!</h1>
+
+		<div id="ruleDivHTML" style="visibility: hidden;opacity: 0;">
+			<h1> BULLSHIT <br /> Rules</h1>
+			<img src="Images/instructions.jpg" id="instructionImg1"/>
+
+			<div id="boxDiv"></div>
+
+			<img src="Images/gameRules.jpg" id="instructionsImg2"/>
+		</div>
+	</body>
+</html>
