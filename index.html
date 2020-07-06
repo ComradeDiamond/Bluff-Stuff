@@ -121,7 +121,7 @@
 			}
 			.proceedButtonCSS:hover
 			{
-				background-color: #95d6f5;
+				background-color: #2976f2;
 			}
 			.fadeCSS
 			{
@@ -162,6 +162,19 @@
 				right: 60%;
 				top: 15vh;
 			}
+			#startButtonHTML
+			{
+				position: absolute;
+				top: 90vh;
+				right: 5%;
+				outline: none;
+				border-radius: 10px;
+				font: 18pt comic sans ms;
+				color: white;
+				padding: 3px;
+				cursor: pointer;
+				background-color: #4278f5;
+			}
 		</style>
 		<link href="animations.css" rel="stylesheet" />
 		<script>
@@ -169,9 +182,7 @@
 				decisionButton = document.getElementById("decisionButtonHTML");
 				playerCountDecision = 0;
 				ruleDiv = document.getElementById("ruleDivHTML");
-			}
-			function display() {
-				
+				startButton = document.getElementsById("startButtonHTML");
 			}
 			function circle() { //Creates a circle with animation that appears
 				let tempCircle = document.createElement("div");
@@ -299,6 +310,8 @@
 			{
 				ruleDiv.style.visibility = "visible";
 				ruleDiv.className = "fadeInCSS";
+				startButton.className = "fadeInCSS";
+				startButton.style.visibility = "visible";
 			}
 		</script>
 	</head>
@@ -314,6 +327,8 @@
 			<div id="boxDiv"></div>
 
 			<img src="Images/gameRules.jpg" id="instructionsImg2"/>
+
+			<button id="startButtonHTML" onclick="window.open('gameplay.html', '_self');">Begin Game</button>
 		</div>
 	</body>
 </html>

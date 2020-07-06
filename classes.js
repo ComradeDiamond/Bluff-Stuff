@@ -51,6 +51,84 @@ function Card(x, y)
 	this.value = x;
 	this.item = y;
 	this.officialLanguage = `${x}-${y}`;
-	this.image = this.officialLanguage + ".png";
+	this.image = "Images/" + this.officialLanguage + ".png";
+	this.up = false;
 }
-function Card.prototype.createCard()
+Card.prototype.createCard = function(cardHolder)
+{
+	let mainObject = this; //Using this inside event listener messes up scoping so we're doing it here
+
+	let tempCard = document.createElement("img");
+	tempCard.src = this.image;
+	tempCard.style.cursor = "pointer";
+	tempCard.style.position = "relative";
+
+	tempCard.addEventListener("click", function() {
+		if (mainObject.up)
+		{
+			tempCard.style.bottom = "0px";
+		}
+		else
+		{
+			tempCard.style.bottom = "8px";
+		}
+		mainObject.up = !mainObject.up;
+	})
+
+	cardHolder.appendChild(tempCard);
+}
+function Player()
+{
+	this.hand = [];
+	this.isAi = true;
+}
+Player.prototype.addCard = function(card)
+{
+	this.hand.push(card);
+}
+Player.prototype.playCard = function() //Gets rid of the card from your hand
+{
+	/*for (var i in cardArray)
+	{
+		let cardPosition = this.hand.indexOf(cardArray[i]);
+		cardArray.splice(cardPosition, 1);
+	}
+	*/
+	let indexArray = [];
+	//Push and ppop
+	for (let i in this.hand)
+	{
+		if (this.hand[i].up) //Up = play
+		{
+			let cardPosition = this.hand.indexOf(this.hand[i]);
+			indexArray.push(cardPosition);
+		}
+	}
+
+	//Goes backwards when clearing so former cards in this.hand are unaffected
+	for (let i=(indexArray.length-1); i>=0; i--) 
+	{
+		this.hand.splice(indexArray[i], 1);
+	}
+}
+Player.prototype.updateHand = async function(stache) //Makes sure all the card appears in the player's hand eventually
+{
+	for (var i in this.hand)
+	{
+		this.hand[i].createCard(stache);
+	}
+}
+Player.prototype.checkNumSelected = function() //Returns how much cards the player has selected
+{
+	let numSelected = 0;
+
+	for (var i in this.hand)
+	{
+		if (this.hand[i].up)
+		{
+			numSelected++;
+		}
+	}
+
+	return numSelected;
+}

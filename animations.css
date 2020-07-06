@@ -28,3 +28,15 @@
 	from {opacity: 1;}
 	to {opacity: 0;}
 }
+@keyframes appear
+{
+	0% {width: 2%; height: 2vh;}
+	50% {width: 40%; height: 2vh;}
+	100% {width: 40%; height: 60vh;}
+}
+@keyframes disappear
+{
+	0% {width: 40%; height: 40vh;}
+	50% {width: 40%; height: 2vh;}
+	100% {width: 2%; height: 2vh;}
+}
