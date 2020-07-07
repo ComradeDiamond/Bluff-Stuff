@@ -59,10 +59,37 @@
 				position: absolute;
 				right: 5%;
 				bottom: 5vh;
+				text-align: center;
 				border-radius: 50%;
-				background-color: cornflowerblue;
-				width: 5%;
-				font: 24pt trebuchet ms;
+				background-color: #4ac3f7;;
+				width: 150px;
+				height: 150px;
+				font: 28pt trebuchet ms;
+				color: white;
+				border: 8px outset black;
+				box-shadow: 2px 2px 6px 5px black;
+				cursor: pointer;
+				animation-name: blueFlash;
+				animation-duration: 10s;
+				animation-iteration-count: infinite;
+				animation-direction: alternate;
+			}
+			.warningDivCSS
+			{
+				position: absolute;
+				top: 70vh;
+				left: 0%;
+				color: #f55733;
+				width: 99%;
+				font: 24pt comic sans ms;
+				text-align: center;
+			}
+			.flyssolveCSS
+			{
+				animation-name: flyssolve;
+				animation-duration: 3s;
+				animation-fill-mode: forwards;
+				transform: rotateX(80deg);
 			}
 		</style>
 		<script src="classes.js"></script>
@@ -71,7 +98,7 @@
 				gameLog = document.getElementById("gameLogHTML");
 				gameLogLog = document.getElementById("gameLogLogHTML");
 				gameLog.style.visibility = "hidden";
-				playerStache = document.getElementById("playerStacheHTML");
+				playerStache = document.getElementById("playerStacheHTML"); //Will only contain cards
 
 				//Game Variables
 				playBtnState = false;
@@ -194,10 +221,86 @@
 
 					let tempPlayBtn = document.createElement("span");
 					tempPlayBtn.id = "tempPlayBtnHTML";
-					tempPlayBtn.innerHTML = "Play<br />Card";
+					tempPlayBtn.innerHTML = "<br />Play<br />Card";
 
 					tempPlayBtn.addEventListener("click", function() {
-						console.log(playerArray[0].checkNumSelected());
+						let numSelected = playerArray[0].checkNumSelected();
+
+						if (numSelected > 4) //If the number of card selected is too much, the game refuses to play the cards
+						{
+							let tempItem = document.createElement("div");
+							tempItem.className = "warningDivCSS";
+							tempItem.innerHTML = "You can't have more than 4 cards";
+
+							document.body.appendChild(tempItem);
+
+							//Disable all pointer events on the button for the time being
+							tempPlayBtn.style.pointerEvents = "none";
+
+							window.setTimeout(function() {
+								tempPlayBtn.style.cursor = "pointer";
+								tempPlayBtn.style.pointerEvents = "auto";
+								tempItem.remove();
+							}, 3000);
+
+							return;
+						}
+						else if (numSelected == 0) //If nothing is selected, don't play
+						{
+							let tempItem = document.createElement("div");
+							tempItem.className = "warningDivCSS";
+							tempItem.innerHTML = "You need to select a card";
+
+							document.body.appendChild(tempItem);
+
+							tempPlayBtn.style.pointerEvents = "none";
+
+							window.setTimeout(function() {
+								tempPlayBtn.style.cursor = "pointer";
+								tempPlayBtn.style.pointerEvents = "auto";
+								tempItem.remove();
+							}, 3000);
+						}
+						else //If it's all fine, play it
+						{
+							//Yeet all the cards that are up in accordance with the returned array 
+
+							let childrenIndexes = playerArray[0].selectionArray();
+
+							for (var i=(childrenIndexes.length-1); i>=0; i--) //Loo[s through all the children, and remove them when their animation gets faded
+							{
+								let indexNum = childrenIndexes[i];
+								playerStache.children[indexNum].classList.add("flyssolveCSS");
+							}
+
+							//Removes all the cards visible, and creates new ones. 
+							//Creates a promise to have the rest of the code executed after the setTimeout
+
+							let calcAftermath = async function() {
+								playerArray[0].playCard();
+								let updateFrontend = new Promise( function(resolve, reject)
+								{
+									window.setTimeout(function(){
+										for (var c=(playerStache.children.length-1); c>=0; c--)
+										{
+											playerStache.children[c].remove();
+										}
+
+										resolve();
+									}, 3000)
+								});
+
+								await updateFrontend;
+
+								playerArray[0].updateHand(playerStache);
+
+								window.setTimeout(function(){
+									alert("yoy")
+								}, 3000);
+							}
+
+							calcAftermath();
+						}
 					})
 
 					document.body.appendChild(tempPlayBtn);

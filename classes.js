@@ -132,3 +132,18 @@ Player.prototype.checkNumSelected = function() //Returns how much cards the play
 
 	return numSelected;
 }
+Player.prototype.selectionArray = function() //Returns an array with the indexes of the cards that have been up
+//Loop backwards when you use this
+{
+	let indexArray = [];
+
+	for (var i in this.hand)
+	{
+		if (this.hand[i].up)
+		{
+			indexArray.push(i);
+		}
+	}
+
+	return indexArray;
+}

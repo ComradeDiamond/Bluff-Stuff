@@ -40,3 +40,14 @@
 	50% {width: 40%; height: 2vh;}
 	100% {width: 2%; height: 2vh;}
 }
+@keyframes blueFlash
+{
+	from {background-color: #4ac3f7;}
+	to {background-color: #0362fc;}
+}
+@keyframes flyssolve
+{
+	0% {opacity: 1; top: initial; left: initial;}
+	50% {opacity: 1; top: 45vh; left: 45vh;}
+	100% {opacity: 0; top:45vh; left: 45vh;}
+}
