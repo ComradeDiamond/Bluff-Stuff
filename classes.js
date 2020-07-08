@@ -76,6 +76,8 @@ Card.prototype.createCard = function(cardHolder)
 	})
 
 	cardHolder.appendChild(tempCard);
+
+	return tempCard;
 }
 function Player()
 {

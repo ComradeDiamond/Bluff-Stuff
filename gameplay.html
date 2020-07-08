@@ -84,12 +84,28 @@
 				font: 24pt comic sans ms;
 				text-align: center;
 			}
-			.flyssolveCSS
+			.flyssolveCSS1, .flyssolveCSS2, .flyssolveCSS3, .flyssolveCSS4
 			{
-				animation-name: flyssolve;
+				position: absolute;
 				animation-duration: 3s;
 				animation-fill-mode: forwards;
 				transform: rotateX(80deg);
+			}
+			.flyssolveCSS0
+			{
+				animation-name: flyssolve0;
+			}
+			.flyssolveCSS1
+			{
+				animation-name: flyssolve1;
+			}
+			.flyssolveCSS2
+			{
+				animation-name: flyssolve2;
+			}
+			.flyssolveCSS3
+			{
+				animation-name: flyssolve3;
 			}
 		</style>
 		<script src="classes.js"></script>
@@ -267,10 +283,20 @@
 
 							let childrenIndexes = playerArray[0].selectionArray();
 
-							for (var i=(childrenIndexes.length-1); i>=0; i--) //Loo[s through all the children, and remove them when their animation gets faded
+							for (var i=(childrenIndexes.length-1); i>=0; i--) //Loops through all the children, and remove them when their animation gets faded
 							{
+								//Creates a new temporary card that has document.body as its parent, so absolute positioning
+								//will work on the body instead of the card stache div
 								let indexNum = childrenIndexes[i];
-								playerStache.children[indexNum].classList.add("flyssolveCSS");
+
+								playerStache.children[indexNum].remove();
+
+								let tempNewCard = new Card("back-red-75", "1").createCard(document.body);
+								tempNewCard.style.position = "absolute";
+								tempNewCard.style.top = "80vh";
+								tempNewCard.style.left = "45%";
+								
+								tempCard.classList.add("flyssolveCSS" + i);
 							}
 
 							//Removes all the cards visible, and creates new ones. 

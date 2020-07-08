@@ -45,9 +45,27 @@
 	from {background-color: #4ac3f7;}
 	to {background-color: #0362fc;}
 }
-@keyframes flyssolve
+@keyframes flyssolve0
 {
-	0% {opacity: 1; top: initial; left: initial;}
-	50% {opacity: 1; top: 45vh; left: 45vh;}
-	100% {opacity: 0; top:45vh; left: 45vh;}
+	0% {opacity: 1; top: 80vh; left: 47%;}
+	50% {opacity: 1; top: 45vh; left: 47%;}
+	100% {opacity: 0; top:45vh; left: 47%;}
+}
+@keyframes flyssolve1
+{
+	0% {opacity: 1; top: 80vh; left: 53%;}
+	50% {opacity: 1; top: 45vh; left: 53%;}
+	100% {opacity: 0; top:45vh; left: 53%;}
+}
+@keyframes flyssolve2
+{
+	0% {opacity: 1; top: 80vh; left: 59%;}
+	50% {opacity: 1; top: 45vh; left: 59%;}
+	100% {opacity: 0; top:45vh; left: 59%;}
+}
+@keyframes flyssolve3
+{
+	0% {opacity: 1; top: 80vh; left: 41%;}
+	50% {opacity: 1; top: 45vh; left: 41%;}
+	100% {opacity: 0; top:45vh; left: 41%;}
 }
