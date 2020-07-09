@@ -19,6 +19,22 @@ const cardItem = { //Keep track of the card items
 	hearts : 2,
 	spades : 3
 }
+const cardsValues = [ //Basically flipping cardsName
+	null,
+	'an ace',
+	'a two',
+	'a three',
+	'a four',
+	'a five',
+	'a six',
+	'a seven',
+	'an eight',
+	'a nine',
+	'a ten',
+	'a Jack',
+	'a Queen',
+	'a King'
+]
 function xOfY(x, y) { // Looks for ___ of ___. ie. ace of spades
 	return `${cardsName.x}-${cardItem.y}`
 }

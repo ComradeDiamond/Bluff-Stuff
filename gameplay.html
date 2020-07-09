@@ -54,14 +54,13 @@
 				overflow-y: hidden;
 				white-space: nowrap;
 			}
-			#tempPlayBtnHTML
+			#tempPlayBtnHTML, #tempBullshitBtnHTML
 			{
 				position: absolute;
 				right: 5%;
 				bottom: 5vh;
 				text-align: center;
 				border-radius: 50%;
-				background-color: #4ac3f7;;
 				width: 150px;
 				height: 150px;
 				font: 28pt trebuchet ms;
@@ -69,10 +68,19 @@
 				border: 8px outset black;
 				box-shadow: 2px 2px 6px 5px black;
 				cursor: pointer;
-				animation-name: blueFlash;
 				animation-duration: 10s;
 				animation-iteration-count: infinite;
 				animation-direction: alternate;
+			}
+			#tempPlayBtnHTML
+			{
+				background-color: #4ac3f7;;
+				animation-name: blueFlash;
+			}
+			#tempBullshitBtnHTML
+			{
+				background-color: #ffc936;
+				animation-name: goldFlash;
 			}
 			.warningDivCSS
 			{
@@ -84,7 +92,7 @@
 				font: 24pt comic sans ms;
 				text-align: center;
 			}
-			.flyssolveCSS1, .flyssolveCSS2, .flyssolveCSS3, .flyssolveCSS4
+			.flyssolveCSS0, .flyssolveCSS1, .flyssolveCSS2, .flyssolveCSS3
 			{
 				position: absolute;
 				animation-duration: 3s;
@@ -229,13 +237,22 @@
 			//Player Turn
 			function configPlayButton() //Configures the card play button depending on if it is the player's turn or if they can play the card
 			{
+				if (document.body.querySelector('tempPlayBtnHTML') != null)
+				{
+					tempPlayBtn.remove();
+				}
+				else if (document.body.querySelector('tempBullshitBtnHTML') != null)
+				{
+					tempBullshitBtn.remove();
+				}
+
 				playBtnState = !playBtnState; //Changes the play button state
 
 				if (playBtnState)
 				{
 					//Displays the card playing interface
 
-					let tempPlayBtn = document.createElement("span");
+					tempPlayBtn = document.createElement("span");
 					tempPlayBtn.id = "tempPlayBtnHTML";
 					tempPlayBtn.innerHTML = "<br />Play<br />Card";
 
@@ -283,6 +300,8 @@
 
 							let childrenIndexes = playerArray[0].selectionArray();
 
+							tempNewCardArray = [];
+
 							for (var i=(childrenIndexes.length-1); i>=0; i--) //Loops through all the children, and remove them when their animation gets faded
 							{
 								//Creates a new temporary card that has document.body as its parent, so absolute positioning
@@ -291,12 +310,15 @@
 
 								playerStache.children[indexNum].remove();
 
+								logPlay(`You played ${cardsValues[playerArray[0].hand[childrenIndexes[i]].value]}!`);
+
 								let tempNewCard = new Card("back-red-75", "1").createCard(document.body);
 								tempNewCard.style.position = "absolute";
 								tempNewCard.style.top = "80vh";
 								tempNewCard.style.left = "45%";
 								
-								tempCard.classList.add("flyssolveCSS" + i);
+								tempNewCard.classList.add(`flyssolveCSS${i}`);
+								tempNewCardArray.push(tempNewCard);
 							}
 
 							//Removes all the cards visible, and creates new ones. 
@@ -318,23 +340,35 @@
 
 								await updateFrontend;
 
+								for (var f in tempNewCardArray) //Removes the back card covers
+								{
+									tempNewCardArray[f].remove();
+								}
+
 								playerArray[0].updateHand(playerStache);
 
 								window.setTimeout(function(){
-									alert("yoy")
+									alert("yoy");
+									configPlayButton();
 								}, 3000);
 							}
 
 							calcAftermath();
 						}
 					})
-
 					document.body.appendChild(tempPlayBtn);
 				}
 				else
 				{
-					//Displays the bullshit button
-					return;
+					tempBullshitBtn = document.createElement("span");
+					tempBullshitBtn.id = "tempBullshitBtnHTML";
+					tempBullshitBtn.innerHTML = "<br />Call<br />BS";
+
+					tempBullshitBtn.addEventListener("click", function() {
+						alert("Call Bluff");
+					});
+
+					document.body.appendChild(tempBullshitBtn);
 				}
 			}
 		</script>
