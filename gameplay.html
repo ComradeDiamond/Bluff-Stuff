@@ -21,6 +21,7 @@
 				overflow: auto;
 				font: 18pt trebuchet ms;
 				padding: 8px;
+				z-index: 3;
 			}
 			#gameLogTitleHTML
 			{
@@ -97,7 +98,7 @@
 				position: absolute;
 				animation-duration: 3s;
 				animation-fill-mode: forwards;
-				transform: rotateX(80deg);
+				transform: rotateX(60deg);
 			}
 			.flyssolveCSS0
 			{
@@ -115,6 +116,76 @@
 			{
 				animation-name: flyssolve3;
 			}
+			.aiCSS
+			{
+				position: absolute;
+				width: 200px;
+				height: 200px;
+			}
+			.aiImgCSS
+			{
+				/*But now this absolute positioning will be positioning with the AI Span*/
+				position: absolute;
+				width: 100px;
+				height: 100px;
+				top: 0%;
+				left: 0%;
+			}
+			.aiImgCSSRight
+			{
+				position: absolute;
+				width: 100px;
+				height: 100px;
+				top: 0%;
+				right: 0%;
+			}
+			.aiCardImgCSS
+			{
+				position: absolute;
+				width: 50px;
+				height: 60px;
+				top: 20%;
+				left: 50%;
+				padding-left: 4px;
+			}
+			.aiCardImgCSSRight
+			{
+				position: absolute;
+				width: 50px;
+				height: 60px;
+				top: 20%;
+				left: 20%;
+			}
+			.tempCardCountCSS, .tempCardCountCSSRight
+			{
+				position: absolute;
+				font: bolder 16pt comic sans ms;
+			}
+			.tempCardCountCSS
+			{
+				top: 27%;
+				left: 57%;
+			}
+			.tempCardCountCSSRight
+			{
+				top: 26%;
+				left: 25%;
+			}
+			#centerDeckHTML
+			{
+				position:absolute;
+				top: 45vh;
+				left: 48%;
+				transform: rotateX(60deg);
+			}
+			#currentNumHTML
+			{
+				position: absolute;
+				top: 47vh;
+				left: 55%;
+				font: 14pt trebuchet ms;
+				color: gold;
+			}
 		</style>
 		<script src="classes.js"></script>
 		<script>
@@ -123,6 +194,7 @@
 				gameLogLog = document.getElementById("gameLogLogHTML");
 				gameLog.style.visibility = "hidden";
 				playerStache = document.getElementById("playerStacheHTML"); //Will only contain cards
+				currentNum = document.getElementById("currentNumHTML");
 
 				//Game Variables
 				playBtnState = false;
@@ -137,6 +209,16 @@
 				//The game log is stored in an array
 				gameLogEvents = [];
 
+				//Stuff inside the center pile
+				centerPile = [];
+				lastPlayedCards = [];
+
+				//The rank/card value that the game is at
+				currentValue = 1;
+
+				//The order of the player that is going to play the card next
+				currentPlayer = 0;
+
 				//Here we use an array to loop through AI functions with respect to their turn order. 
 				playActions = [];
 				bluffActions = [];
@@ -146,10 +228,40 @@
 
 				//Gets the game ready
 				createPlayerCount();
+
+				//Displays the AIs on the frontend
+				displayPlayers();
+			}
+			function nextTurn() //Updates the information needed for the next turn
+			{
+				currentValue++;
+				if (currentValue == 14) //If needed, reset current value back to 1
+				{
+					currentValue = 1;
+				}
+
+				currentNum.innerHTML = `Current Card: <br />${valueLoop[currentValue]}`;
+
+				//Determines the next player, and calls on the player to play a card
+				currentPlayer++;
+				if (currentPlayer > playerCount) //If the player number is > playerCount, we should reset the current player to 0 and call the user to play
+				{
+					for (var g = 0; g < playerStache.children.length; g++)
+					{
+						playerStache.children[g].style.pointerEvents = "auto"; //Stop player from interacting with keyboard
+					}
+
+					currentPlayer = 0;
+					configPlayButton();
+				}
+				else //If not, call for the AI to make a move
+				{
+					aiPlay(playerArray[currentPlayer]);
+				}
 			}
 			function createPlayerCount() 
 			{
-				for (var i=0; i<playerCount; i++)
+				for (var i=0; i<=playerCount; i++)
 				{
 					playerArray.push(new Player);
 				}
@@ -233,6 +345,96 @@
 					gameLogLog.children[i].style.color = "white";
 				}
 			}
+			function displayPlayers()
+			{
+				//Creates Divs and Spans for the AI players
+				for (var i=1; i<playerArray.length; i++)
+				{
+					let tempSpan = document.createElement("span");
+					tempSpan.className = "aiCSS";
+
+					playerArray[i].bind(tempSpan);
+
+					let tempImg = document.createElement("img");
+					tempImg.src = `Images/player${i}.jpg`;
+					tempImg.className = "aiImgCSS";
+					tempSpan.appendChild(tempImg);
+
+					let tempCardImg = document.createElement("img");
+					tempCardImg.src = "Images/back-red-75-1.png";
+					tempCardImg.className = "aiCardImgCSS";
+					tempSpan.appendChild(tempCardImg);
+
+					document.body.appendChild(tempSpan);
+				}
+
+				/*Since there are alot of different player numbers, we need to decide where the players go on the game screen 
+				after each customizable player count. The code here uses the object we binded to the backend AI player class object
+				to adjust the absolute positioning*/
+
+				let setAIPosition = function(number, top, leftOrRight, isRight) {
+					let currentObject = playerArray[number].aiDisplay;
+					currentObject.style.top = top;
+
+					//Get the card number display right on top of the cards
+					//Creates the card display so we can later get it right on top of the cards
+					let tempCardCount = document.createElement("span");
+					tempCardCount.innerHTML = '12';
+
+					if (isRight == undefined) //Allows us to be lazy and put no value for isRight
+					{
+						currentObject.style.left = leftOrRight;
+						tempCardCount.className = "tempCardCountCSS";
+					}
+					else if (isRight) //If the card is on the right, reverse the CSS frontend positioning template
+					//First child of the span is image, second child of span is card image
+					{
+						currentObject.style.right = leftOrRight;
+						currentObject.children[0].className = "aiImgCSSRight";
+						currentObject.children[1].className = "aiCardImgCSSRight";
+						tempCardCount.className = "tempCardCountCSSRight";
+					}
+
+					currentObject.appendChild(tempCardCount);
+				}
+
+				switch (playerCount)
+				{
+					case 3:
+						setAIPosition(1, "30vh", "2%");
+						setAIPosition(2, "1vh", "40%");
+						setAIPosition(3, "30vh", "2%", true);
+					break;
+
+					case 4:
+						setAIPosition(1, "30vh", "2%");
+						setAIPosition(2, "1vh", "20%");
+						setAIPosition(3, "1vh", "20%", true);
+						setAIPosition(4, "30vh", "2%", true);
+					break;
+
+					case 5:
+						setAIPosition(1, "15vh", "2%");
+						setAIPosition(2, "40vh", "2%");
+						setAIPosition(3, "1vh", "40%");
+						setAIPosition(4, "15vh", "2%", true);
+						setAIPosition(5, "40vh", "2%", true);
+					break;
+				}
+			}
+			//AI Turn
+			function aiPlay(player)
+			{
+				//Play the card, record it, and setTimeout for next turn
+				let numPlayedCards = player.playCard();
+				logPlay(`Player ${currentPlayer} has played ${numPlayedCards} cards`);
+
+				//Takes the display that shows the number of cards, converts it into an integer, and subtracts numPlayedCards from it
+				let numCardDisplay = parseInt(player.aiDisplay.children[2].innerHTML);
+				player.aiDisplay.children[2].innerHTML = `${(numCardDisplay - numPlayedCards)}`;
+
+				window.setTimeout(nextTurn, 5000);
+			}
 
 			//Player Turn
 			function configPlayButton() //Configures the card play button depending on if it is the player's turn or if they can play the card
@@ -251,6 +453,7 @@
 				if (playBtnState)
 				{
 					//Displays the card playing interface
+					logWipe();
 
 					tempPlayBtn = document.createElement("span");
 					tempPlayBtn.id = "tempPlayBtnHTML";
@@ -263,7 +466,7 @@
 						{
 							let tempItem = document.createElement("div");
 							tempItem.className = "warningDivCSS";
-							tempItem.innerHTML = "You can't have more than 4 cards";
+							tempItem.innerHTML = "You can't play more than 4 cards";
 
 							document.body.appendChild(tempItem);
 
@@ -347,8 +550,13 @@
 
 								playerArray[0].updateHand(playerStache);
 
+								for (var g = 0; g < playerStache.children.length; g++)
+								{
+									playerStache.children[g].style.pointerEvents = "none"; //Stop player from interacting with keyboard
+								}
+
 								window.setTimeout(function(){
-									alert("yoy");
+									nextTurn();
 									configPlayButton();
 								}, 3000);
 							}
@@ -383,5 +591,8 @@
 
 		<div id="playerStacheHTML">
 		</div>
+
+		<img src="Images/back-red-75-1.png" id="centerDeckHTML"/>
+		<span id="currentNumHTML">Current Card: <br /></span>
 	</body>
 </html>
