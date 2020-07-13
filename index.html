@@ -275,6 +275,19 @@
 					proceedButton.innerHTML = "=>";
 
 					proceedButton.addEventListener("click", function() { //Stores how many players the user chooses to fight against
+
+						switch (playerCount)
+						{
+							case "three":
+								playerCount = 3;
+								break;
+							case "four":
+								playerCount = 4;
+								break;
+							case "five":
+								playerCount = 5;
+								break;	
+						}
 						localStorage.playerNum = playerCount;
 
 						//Fades all the children of the optionRectangle element

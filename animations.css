@@ -74,3 +74,66 @@
 	50% {opacity: 1; top: 45vh; left: 41%;}
 	100% {opacity: 0; top:45vh; left: 41%;}
 }
+/*I'm getting OCI Vibes*/
+@keyframes flyssolve4 
+{
+	/*Center Left*/
+	0% {opacity: 1; top: 34vh; left: 8%;}
+	50% {opacity: 1; top: 45vh; left: 48%;}
+	100% {opacity: 0; top:45vh; left: 48%;}
+}
+@keyframes flyssolve5
+{
+	/*Center Right*/
+	0% {opacity: 1; top: 34vh; left: 90%;}
+	50% {opacity: 1; top: 45vh; left: 48%;}
+	100% {opacity: 0; top:45vh; left: 48%;}
+}
+@keyframes flyssolve6
+{
+	/*Authoritarian Center*/
+	0% {opacity: 1; top: 5vh; left: 48%;}
+	50% {opacity: 1; top: 45vh; left: 48%;}
+	100% {opacity: 0; top:45vh; left: 48%;}
+}
+@keyframes flyssolve7
+{
+	/*Authoritarian Left*/
+	0% {opacity: 1; top: 20vh; left: 8%;}
+	50% {opacity: 1; top: 45vh; left: 48%;}
+	100% {opacity: 0; top:45vh; left: 48%;}
+}
+@keyframes flyssolve8
+{
+	/*Libertarian Left*/
+	0% {opacity: 1; top: 44vh; left: 8%;}
+	50% {opacity: 1; top: 45vh; left: 48%;}
+	100% {opacity: 0; top:45vh; left: 48%;}
+}
+@keyframes flyssolve9
+{
+	/*Authoritarian Right*/
+	0% {opacity: 1; top: 20vh; left: 92%;}
+	50% {opacity: 1; top: 45vh; left: 48%;}
+	100% {opacity: 0; top:45vh; left: 48%;}
+}
+@keyframes flyssolve10
+{
+	/*Libertarian Right*/
+	0% {opacity: 1; top: 44vh; left: 92%;}
+	50% {opacity: 1; top: 45vh; left: 48%;}
+	100% {opacity: 0; top:45vh; left: 48%;}
+}
+@keyframes flyssolve11
+{
+	/*Max top center left*/
+	0% {opacity: 1; top: 5vh; left: 24%;}
+	50% {opacity: 1; top: 45vh; left: 48%;}
+	100% {opacity: 0; top:45vh; left: 48%;}
+}
+@keyframes flyssolve12
+{
+	/*Max top center right*/
+	0% {opacity: 1; top: 5vh; left: 76%;}
+	50% {opacity: 1; top: 45vh; left: 48%;}
+	100% {opacity: 0; top:45vh; left: 48%;}

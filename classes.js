@@ -130,6 +130,7 @@ function Player()
 	this.hand = [];
 	this.isAi = true;
 	this.aiDisplay = null;
+	this.animationClassName = null;
 }
 Player.prototype.addCard = function(card)
 {
