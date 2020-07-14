@@ -197,7 +197,7 @@ Player.prototype.playCard = function() //Gets rid of the card from your hand
 
 		for (let i in indexArray) //Plays/Deletes the card in the hand that corresponds to the index/number inside the indexArray
 		{
-			let tempPlayedCard = this.hand.splice(indexArray[i], 1);
+			let tempPlayedCard = this.hand.splice(indexArray[i], 1)[0];
 			centerPile.push(tempPlayedCard);
 			lastPlayedCards.push(tempPlayedCard);
 		}

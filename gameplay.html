@@ -55,7 +55,7 @@
 				overflow-y: hidden;
 				white-space: nowrap;
 			}
-			#tempPlayBtnHTML, #tempBullshitBtnHTML
+			#playBtnHTML, #bullshitBtnHTML
 			{
 				position: absolute;
 				right: 5%;
@@ -73,12 +73,12 @@
 				animation-iteration-count: infinite;
 				animation-direction: alternate;
 			}
-			#tempPlayBtnHTML
+			#playBtnHTML
 			{
 				background-color: #4ac3f7;;
 				animation-name: blueFlash;
 			}
-			#tempBullshitBtnHTML
+			#bullshitBtnHTML
 			{
 				background-color: #ffc936;
 				animation-name: goldFlash;
@@ -494,11 +494,11 @@
 			//Player Turn
 			function configPlayButton() //Configures the card play button depending on if it is the player's turn or if they can play the card
 			{
-				if (document.body.querySelector('tempPlayBtnHTML') != null)
+				if (document.body.querySelector('#playBtnHTML') != null)
 				{
 					tempPlayBtn.remove();
 				}
-				else if (document.body.querySelector('tempBullshitBtnHTML') != null)
+				else if (document.body.querySelector('#bullshitBtnHTML') != null)
 				{
 					tempBullshitBtn.remove();
 				}
@@ -511,7 +511,7 @@
 					logWipe();
 
 					tempPlayBtn = document.createElement("span");
-					tempPlayBtn.id = "tempPlayBtnHTML";
+					tempPlayBtn.id = "playBtnHTML";
 					tempPlayBtn.innerHTML = "<br />Play<br />Card";
 
 					tempPlayBtn.addEventListener("click", function() {
@@ -624,11 +624,53 @@
 				else
 				{
 					tempBullshitBtn = document.createElement("span");
-					tempBullshitBtn.id = "tempBullshitBtnHTML";
+					tempBullshitBtn.id = "bullshitBtnHTML";
 					tempBullshitBtn.innerHTML = "<br />Call<br />BS";
 
 					tempBullshitBtn.addEventListener("click", function() {
-						alert("Call Bluff");
+
+						//Stops the timer for now
+						window.clearTimeout(turnTimer);
+
+						tempBullshitBtn.style.pointerEvents = "none"; //Stops the player from calling bs infinite times
+
+						let areCardsValid = true;
+					
+						//Loops through the last played cards to see if the cards are valid
+						for (var i in lastPlayedCards)
+						{
+							if (lastPlayedCards[i].value != currentValue)
+							{
+								areCardsValid = false;
+								break; //No need to continue the loop, just skip it if card is trash
+							}
+						}
+
+						if (!areCardsValid)
+						{
+							//If cards are not valid, add all the cards last played into the player's hand
+							for (var i in centerPile)
+							{
+								//Current player did not update yet because we didn't clear time out
+								//Do not update display because the AI does not have a visual display
+								playerArray[currentPlayer].addCard(centerPile[i]);
+							}
+
+							//Resets the center pile
+							centerPile = [];
+
+							//Updates AI card display of how much cards the AI has
+							var i = parseInt(i); //Redeclaration property
+							
+							let numCardDisplay = parseInt(playerArray[currentPlayer].aiDisplay.children[2].innerHTML);
+							playerArray[currentPlayer].aiDisplay.children[2].innerHTML = `${(numCardDisplay + i)}`;
+						}
+
+						//Continue the game and resets bs button
+						turnTimer = window.setTimeout(function() {
+							nextTurn();
+							tempBullshitBtn.style.pointerEvents = "auto";
+						}, 5000);
 					});
 
 					document.body.appendChild(tempBullshitBtn);
