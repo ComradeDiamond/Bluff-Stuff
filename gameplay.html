@@ -256,7 +256,6 @@
 				currentPlayer = 0;
 
 				//Here we use an array to loop through AI functions with respect to their turn order. 
-				playActions = [];
 				bluffActions = [];
 
 				//Store all the AI inside an array for easy access. The player is stored first
@@ -417,7 +416,7 @@
 					//Get the card number display right on top of the cards
 					//Creates the card display so we can later get it right on top of the cards
 					let tempCardCount = document.createElement("span");
-					tempCardCount.innerHTML = '12';
+					tempCardCount.innerHTML = playerArray[number].hand.length;
 
 					//Allows us to be lazy and put no value for isRight
 					if (isRight == undefined) 
@@ -468,9 +467,8 @@
 				let numPlayedCards = player.playCard();
 				logPlay(`Player ${currentPlayer} has played ${numPlayedCards} cards`);
 
-				//Takes the display that shows the number of cards, converts it into an integer, and subtracts numPlayedCards from it
-				let numCardDisplay = parseInt(player.aiDisplay.children[2].innerHTML);
-				player.aiDisplay.children[2].innerHTML = `${(numCardDisplay - numPlayedCards)}`;
+				//Takes the display that shows the number of cards
+				player.aiDisplay.children[2].innerHTML = `${player.hand.length}`;
 
 				for (var i=0; i<numPlayedCards; i++)
 				{
@@ -646,7 +644,36 @@
 							}
 						}
 
-						if (!areCardsValid)
+						if (areCardsValid)
+						{
+							//If cards are valid, the player pick up the whole deck
+							for (var i in centerPile)
+							{
+								playerArray[0].addCard(centerPile[i]);
+							}
+
+							//Sends the tempCard in the player's hand, then animates it
+							let tempNewCard = new Card("back-red-75", "1").createCard(document.body);
+							tempNewCard.style.position = "absolute";
+							tempNewCard.classList.add(`flyssolveCSS1`);
+							tempNewCard.style.animationDuration = "3s";
+							tempNewCard.style.animationDirection = "reverse";
+
+							//Updates the cards in the player's hand on the frontend
+							//Does this with a delay in order to give the player the feeling of stuff being updated
+							window.setTimeout(function() {
+								tempNewCard.remove();
+
+								for (var c=(playerStache.children.length-1); c>=0; c--)
+								{
+									playerStache.children[c].remove();
+								}
+
+								playerArray[0].updateHand(playerStache);
+							}, 3000);
+							centerPile = [];
+						}
+						else
 						{
 							//If cards are not valid, add all the cards last played into the player's hand
 							for (var i in centerPile)
@@ -656,14 +683,22 @@
 								playerArray[currentPlayer].addCard(centerPile[i]);
 							}
 
+							//Creates a new card and animates the player picking up the entire deck
+							let tempNewCard = new Card("back-red-75", "1").createCard(document.body);
+							tempNewCard.style.position = "absolute";	
+							tempNewCard.classList.add(playerArray[currentPlayer].animationClassName);
+							tempNewCard.style.animationDirection = "reverse";
+
+							//Removes the animated card
+							window.setTimeout(function() {
+								tempNewCard.remove();
+							}, 2000);
+
 							//Resets the center pile
 							centerPile = [];
 
 							//Updates AI card display of how much cards the AI has
-							var i = parseInt(i); //Redeclaration property
-							
-							let numCardDisplay = parseInt(playerArray[currentPlayer].aiDisplay.children[2].innerHTML);
-							playerArray[currentPlayer].aiDisplay.children[2].innerHTML = `${(numCardDisplay + i)}`;
+							playerArray[currentPlayer].aiDisplay.children[2].innerHTML = `${playerArray[currentPlayer].hand.length}`;
 						}
 
 						//Continue the game and resets bs button
@@ -674,7 +709,7 @@
 					});
 
 					document.body.appendChild(tempBullshitBtn);
-				}
+				}				
 			}
 		</script>
 	</head>

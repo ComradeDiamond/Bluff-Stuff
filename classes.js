@@ -51,16 +51,16 @@ const cardsValues = [ //Basically flipping cardsName
 ]
 const valueLoop = [
 	null,
-	"ace",
-	"two",
-	"three",
-	"four",
-	"five",
-	"six",
-	"seven",
-	"eight",
-	"nine",
-	"ten",
+	"Ace",
+	"Two",
+	"Three",
+	"Four",
+	"Five",
+	"Six",
+	"Seven",
+	"Eight",
+	"Nine",
+	"Ten",
 	"Jack",
 	"Queen",
 	"King"
@@ -221,7 +221,7 @@ Player.prototype.playCard = function() //Gets rid of the card from your hand
 		//Goes backwards when clearing so former cards in this.hand are unaffected
 		for (let i=(indexArray.length-1); i>=0; i--) 
 		{
-			let tempPlayedCard = this.hand.splice(indexArray[i], 1);
+			let tempPlayedCard = this.hand.splice(indexArray[i], 1)[0];
 			centerPile.push(tempPlayedCard);
 			lastPlayedCards.push(tempPlayedCard);
 		}
