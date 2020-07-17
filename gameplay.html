@@ -333,6 +333,7 @@
 				}
 				else //If not, call for the AI to make a move
 				{
+					tempBullshitBtn.style.pointerEvents = "auto";
 					aiPlay(playerArray[currentPlayer]);
 				}
 			}
@@ -533,6 +534,10 @@
 				}
 
 				//We can clear this timer later for the bullshit animations
+				bullshitTimer = window.setTimeout(function() {
+					AIDetermineBullshit();
+				}, 3000);
+
 				turnTimer = window.setTimeout(nextTurn, 5000);
 			}
 
@@ -543,6 +548,11 @@
 
 				for (var i=1; i<playerArray.length; i++)
 				{
+					if (i == currentPlayer)	//Stops current player from calling BS on itself
+					{
+						continue;
+					}
+
 					let matchNum = playerArray[i].matchArray().length;
 					
 					if ((matchNum + playedNum) > 4) //Only runs once, because if there is >4 cards, noone has a higher percentage
@@ -573,6 +583,7 @@
 
 				if (mostProbablePlayer != null)
 				{
+					tempBullshitBtn.style.pointerEvents = "none"; //Disables player from bsing twice
 					playerArray[mostProbablePlayer].callBullshit();
 				}
 			}
@@ -705,7 +716,9 @@
 									nextTurn();
 								}, 5000);
 
-								AIDetermineBullshit();
+								bullshitTimer = window.setTimeout(function() {
+									AIDetermineBullshit();
+								}, 3000);
 							}
 							calcAftermath();
 						}
@@ -720,8 +733,9 @@
 
 					tempBullshitBtn.addEventListener("click", function() {
 
-						//Stops the timer for now
+						//Stops the timers for now; stops AI from making a move
 						window.clearTimeout(turnTimer);
+						window.clearTimeout(bullshitTimer);
 
 						tempBullshitBtn.style.pointerEvents = "none"; //Stops the player from calling bs infinite times
 

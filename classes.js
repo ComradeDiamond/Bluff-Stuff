@@ -322,39 +322,69 @@ Player.prototype.callBullshit = function() //AI call bullshit
 	}
 	else
 	{
-		//If cards are not valid, add all the cards last played into the player's hand
-		for (var i in centerPile)
+		if (currentPlayer == 0) //If the person is the player
 		{
-			//Player gets these cards
-			playerArray[0].addCard(centerPile[i]);
+			//If cards are not valid, add all the cards last played into the player's hand
+			for (var i in centerPile)
+			{
+				//Player gets these cards
+				playerArray[0].addCard(centerPile[i]);
+			}
+
+			//Creates a new card and animates the player picking up the entire deck
+			let tempNewCard = new Card("back-red-75", "1").createCard(document.body);
+			tempNewCard.style.position = "absolute";	
+			tempNewCard.classList.add("flyssolveCSS1");
+			tempNewCard.style.animationDuration = "3s";
+			tempNewCard.style.animationDirection = "reverse";
+
+			//Removes the animated card and updates hand
+			window.setTimeout(function() {
+				tempNewCard.remove();
+
+				for (var c=(playerStache.children.length-1); c>=0; c--)
+				{
+					playerStache.children[c].remove();
+				}
+
+				playerArray[0].updateHand(playerStache);
+
+				for (var g = 0; g < playerStache.children.length; g++)
+				{
+					playerStache.children[g].style.pointerEvents = "none"; //Stop player from interacting with keyboard
+				}
+			}, 3000);
+
+			//Resets the center pile
+			centerPile = [];			
 		}
+		else
+		{
+			//If cards are not valid, add all the cards last played into the AI player's hand
+			for (var i in centerPile)
+			{
+				//Current player did not update yet because we didn't clear time out
+				//Do not update display because the AI does not have a visual display
+				playerArray[currentPlayer].addCard(centerPile[i]);
+			}
 
-		//Creates a new card and animates the player picking up the entire deck
-		let tempNewCard = new Card("back-red-75", "1").createCard(document.body);
-		tempNewCard.style.position = "absolute";	
-		tempNewCard.classList.add("flyssolveCSS1");
-		tempNewCard.style.animationDuration = "3s";
-		tempNewCard.style.animationDirection = "reverse";
+			//Creates a new card and animates the player picking up the entire deck
+			let tempNewCard = new Card("back-red-75", "1").createCard(document.body);
+			tempNewCard.style.position = "absolute";	
+			tempNewCard.classList.add(playerArray[currentPlayer].animationClassName);
+			tempNewCard.style.animationDirection = "reverse";
 
-		//Removes the animated card and updates hand
-		window.setTimeout(function() {
+			//Removes the animated card
+			window.setTimeout(function() {
 			tempNewCard.remove();
+			}, 2000);
 
-			for (var c=(playerStache.children.length-1); c>=0; c--)
-			{
-				playerStache.children[c].remove();
-			}
+			//Resets the center pile
+			centerPile = [];
 
-			playerArray[0].updateHand(playerStache);
-
-			for (var g = 0; g < playerStache.children.length; g++)
-			{
-				playerStache.children[g].style.pointerEvents = "none"; //Stop player from interacting with keyboard
-			}
-		}, 3000);
-
-		//Resets the center pile
-		centerPile = [];			
+			//Updates AI card display of how much cards the AI has
+			playerArray[currentPlayer].aiDisplay.children[2].innerHTML = `${playerArray[currentPlayer].hand.length}`;
+		}
 	}
 
 	//Continue the game and resets bs button
