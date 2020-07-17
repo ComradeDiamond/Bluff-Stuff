@@ -192,7 +192,7 @@ Player.prototype.playCard = function() //Gets rid of the card from your hand
 			{
 				while (doesRandomCardRepeat) //Picks a random card in the AI hand that does not repeat
 				{
-					let randomNumber = Math.round(Math.random() * this.hand.length);
+					let randomNumber = Math.floor(Math.random() * this.hand.length);
 
 					if (indexArray.indexOf(randomNumber) == -1)
 					{
@@ -204,7 +204,7 @@ Player.prototype.playCard = function() //Gets rid of the card from your hand
 		}
 		else if (indexArray.length == 0)
 		{
-			indexArray.push(Math.round(Math.random() * this.hand.length));
+			indexArray.push(Math.floor(Math.random() * this.hand.length));
 		}
 
 		indexArray.sort(function(a, b){return b - a});
@@ -246,6 +246,7 @@ Player.prototype.updateHand = async function(stache) //Makes sure all the card a
 	for (var i in this.hand)
 	{
 		this.hand[i].createCard(stache);
+		this.hand[i].up = false;
 	}
 }
 Player.prototype.checkNumSelected = function() //Returns how much cards the player has selected
@@ -277,7 +278,7 @@ Player.prototype.selectionArray = function() //Returns an array with the indexes
 
 	return indexArray;
 }
-Player.prototype.callBullshit = function() //AI call bullshit
+Player.prototype.callBullshit = function(mostProbablePlayer) //AI call bullshit
 {
 	//Stops the timer for now
 	window.clearTimeout(turnTimer);
@@ -296,6 +297,8 @@ Player.prototype.callBullshit = function() //AI call bullshit
 
 	if (areCardsValid)
 	{
+		logPlay(`Player ${mostProbablePlayer} called a false bullshit. They pick up the entire deck.`);
+
 		//If cards are valid, the player pick up the whole deck
 		for (var i in centerPile)
 		{
@@ -324,6 +327,8 @@ Player.prototype.callBullshit = function() //AI call bullshit
 	{
 		if (currentPlayer == 0) //If the person is the player
 		{
+			logPlay(`Player ${mostProbablePlayer} called bullshit on your bluff. You picked up the whole deck.`);
+
 			//If cards are not valid, add all the cards last played into the player's hand
 			for (var i in centerPile)
 			{
@@ -360,6 +365,8 @@ Player.prototype.callBullshit = function() //AI call bullshit
 		}
 		else
 		{
+			logPlay(`Player ${mostProbablePlayer} called bullshit on Player ${currentPlayer}. They picked up the whole deck.`);
+
 			//If cards are not valid, add all the cards last played into the AI player's hand
 			for (var i in centerPile)
 			{

@@ -543,7 +543,7 @@
 
 			function AIDetermineBullshit()
 			{
-				let mostProbablePlayer = 0; //Returns the player index of the AI most likely to call BS
+				let mostProbablePlayer = null; //Returns the player index of the AI most likely to call BS
 				let playedNum = lastPlayedCards.length;
 
 				for (var i=1; i<playerArray.length; i++)
@@ -575,16 +575,12 @@
 							mostProbablePlayer = i;
 						}
 					}
-					else
-					{
-						mostProbablePlayer = null;
-					}
 				}
 
 				if (mostProbablePlayer != null)
 				{
 					tempBullshitBtn.style.pointerEvents = "none"; //Disables player from bsing twice
-					playerArray[mostProbablePlayer].callBullshit();
+					playerArray[mostProbablePlayer].callBullshit(mostProbablePlayer);
 				}
 			}
 
@@ -753,6 +749,7 @@
 
 						if (areCardsValid)
 						{
+							logPlay(`You called BS on player ${currentPlayer}! It was wrong! You picked up the whole deck.`);
 							//If cards are valid, the player pick up the whole deck
 							for (var i in centerPile)
 							{
@@ -788,6 +785,7 @@
 						}
 						else
 						{
+							logPlay(`You called BS on player ${currentPlayer}! The AI was indeed bluffing and picked up the whole deck.`);
 							//If cards are not valid, add all the cards last played into the AI player's hand
 							for (var i in centerPile)
 							{
