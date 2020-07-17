@@ -55,7 +55,7 @@
 				overflow-y: hidden;
 				white-space: nowrap;
 			}
-			#playBtnHTML, #bullshitBtnHTML
+			#playBtnHTML, #bullshitBtnHTML, #startBtnHTML
 			{
 				position: absolute;
 				right: 5%;
@@ -82,6 +82,11 @@
 			{
 				background-color: #ffc936;
 				animation-name: goldFlash;
+			}
+			#startBtnHTML
+			{
+				background-color: #24e02a;
+				animation-name: greenFlash;
 			}
 			.warningDivCSS
 			{
@@ -234,7 +239,6 @@
 
 				//Game Variables
 				playBtnState = false;
-				configPlayButton();
 
 				//Creates the basic players and the card deck
 				playerCount = parseInt(localStorage.playerNum);
@@ -250,7 +254,7 @@
 				lastPlayedCards = [];
 
 				//The rank/card value that the game is at
-				currentValue = 1;
+				currentValue = 0;
 
 				//The order of the player that is going to play the card next
 				currentPlayer = 0;
@@ -266,6 +270,41 @@
 
 				//Displays the AIs on the frontend
 				displayPlayers();
+				startGame();
+			}
+			function startGame() //Creates the button to start game
+			{
+				let tempStartBtn = document.createElement("span");
+				tempStartBtn.id = "startBtnHTML";
+				tempStartBtn.innerHTML = "<br />Start<br />Game";
+
+				tempStartBtn.addEventListener("click", function() {
+
+					//Loops through the player array, and determines who has the ace of spades
+					for (var i in playerArray)
+					{
+						if (playerArray[i].hasAce())
+						{
+							currentPlayer = (i-1); //Sets the currentPlayer to i-1 so nextTurn can increment it to the correct player
+							break; //Stops the code from running and taking up lots of time
+						}
+					}
+
+					if (currentPlayer != -1) //If the player with the ace isn't the player, display the bullshit button
+					{
+						playBtnState = true;
+						configPlayButton();
+					}
+
+					nextTurn();
+
+					//Removes the start button
+					window.setTimeout(function() {
+						tempStartBtn.remove();
+					}, 2000)
+				})
+
+				document.body.appendChild(tempStartBtn);
 			}
 			function nextTurn() //Updates the information needed for the next turn
 			{
@@ -279,7 +318,10 @@
 
 				//Determines the next player, and calls on the player to play a card
 				currentPlayer++;
-				if (currentPlayer > playerCount) //If the player number is > playerCount, we should reset the current player to 0 and call the user to play
+
+				//If the player number is > playerCount or 0, we should reset the current player to 0 and call the user to play
+
+				if ((currentPlayer > playerCount) || (currentPlayer == 0))
 				{
 					for (var g = 0; g < playerStache.children.length; g++)
 					{
@@ -331,6 +373,11 @@
 
 				//Displays the player's hand in the frontend
 				playerArray[0].updateHand(playerStache);
+
+				for (var g = 0; g < playerStache.children.length; g++)
+				{
+					playerStache.children[g].style.pointerEvents = "none"; //Stop player from interacting with keyboard
+				}
 			}
 			function activateMouseShortcut(e) //Different keys will prompt different commands to run based on mouse shortcuts
 			{
@@ -489,6 +536,47 @@
 				turnTimer = window.setTimeout(nextTurn, 5000);
 			}
 
+			function AIDetermineBullshit()
+			{
+				let mostProbablePlayer = 0; //Returns the player index of the AI most likely to call BS
+				let playedNum = lastPlayedCards.length;
+
+				for (var i=1; i<playerArray.length; i++)
+				{
+					let matchNum = playerArray[i].matchArray().length;
+					
+					if ((matchNum + playedNum) > 4) //Only runs once, because if there is >4 cards, noone has a higher percentage
+					{
+						mostProbablePlayer = i;
+						break;
+					}
+					else if (matchNum + playedNum == 4) //If there is 4 cards, there is a 50% chance the player will call bullshit
+					{
+						if ((Math.random()*2) > 1)
+						{
+							mostProbablePlayer = i;
+							break;
+						}
+					}
+					else if (matchNum + playedNum == 3) //If there are 3 cards, there is a 5% chance the player will call bullshit
+					{
+						if ((Math.random()*20) < 1)
+						{
+							mostProbablePlayer = i;
+						}
+					}
+					else
+					{
+						mostProbablePlayer = null;
+					}
+				}
+
+				if (mostProbablePlayer != null)
+				{
+					playerArray[mostProbablePlayer].callBullshit();
+				}
+			}
+
 			//Player Turn
 			function configPlayButton() //Configures the card play button depending on if it is the player's turn or if they can play the card
 			{
@@ -506,7 +594,6 @@
 				if (playBtnState)
 				{
 					//Displays the card playing interface
-					logWipe();
 
 					tempPlayBtn = document.createElement("span");
 					tempPlayBtn.id = "playBtnHTML";
@@ -579,6 +666,7 @@
 
 							//Removes all the cards visible, and creates new ones. 
 							//Creates a promise to have the rest of the code executed after the setTimeout
+							tempPlayBtn.style.pointerEvents = "none";
 
 							let calcAftermath = async function() {
 								playerArray[0].playCard();
@@ -609,11 +697,16 @@
 								}
 
 								window.setTimeout(function(){
-									nextTurn();
 									configPlayButton();
-								}, 3000);
-							}
+									logWipe();
+								}, 5000);
 
+								turnTimer = window.setTimeout(function() {
+									nextTurn();
+								}, 5000);
+
+								AIDetermineBullshit();
+							}
 							calcAftermath();
 						}
 					})
@@ -670,12 +763,18 @@
 								}
 
 								playerArray[0].updateHand(playerStache);
+
+								for (var g = 0; g < playerStache.children.length; g++)
+								{
+									playerStache.children[g].style.pointerEvents = "none"; //Stop player from interacting with keyboard
+								}
+
 							}, 3000);
 							centerPile = [];
 						}
 						else
 						{
-							//If cards are not valid, add all the cards last played into the player's hand
+							//If cards are not valid, add all the cards last played into the AI player's hand
 							for (var i in centerPile)
 							{
 								//Current player did not update yet because we didn't clear time out

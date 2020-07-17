@@ -132,6 +132,20 @@ function Player()
 	this.aiDisplay = null;
 	this.animationClassName = null;
 }
+Player.prototype.hasAce = function() //Does the player have an ace
+{
+	let tempBoolean = false;
+
+	for (var i in this.hand)
+	{
+		if ((this.hand[i].value == cardsName.ace) && (this.hand[i].item == cardItem.spades))
+		{
+			tempBoolean = true;
+			break;
+		}
+	}
+	return tempBoolean;
+}
 Player.prototype.addCard = function(card)
 {
 	this.hand.push(card);
@@ -262,4 +276,90 @@ Player.prototype.selectionArray = function() //Returns an array with the indexes
 	}
 
 	return indexArray;
+}
+Player.prototype.callBullshit = function() //AI call bullshit
+{
+	//Stops the timer for now
+	window.clearTimeout(turnTimer);
+
+	let areCardsValid = true;
+					
+	//Loops through the last played cards to see if the cards are valid
+	for (var i in lastPlayedCards)
+	{
+		if (lastPlayedCards[i].value != currentValue)
+		{
+			areCardsValid = false;
+			break; //No need to continue the loop, just skip it if card is trash
+		}
+	}
+
+	if (areCardsValid)
+	{
+		//If cards are valid, the player pick up the whole deck
+		for (var i in centerPile)
+		{
+			this.addCard(centerPile[i]);
+		}
+
+		//Sends the tempCard in the player's hand, then animates it
+		let tempNewCard = new Card("back-red-75", "1").createCard(document.body);
+		tempNewCard.style.position = "absolute";
+		tempNewCard.classList.add(this.animationClassName);
+		tempNewCard.style.animationDuration = "3s";
+		tempNewCard.style.animationDirection = "reverse";
+
+		//AI displays the current card count
+		this.aiDisplay.children[2].innerHTML = `${this.hand.length}`;
+
+		//Resets the center pile
+		centerPile = [];
+
+		//Yeet them cards back in the AI hand
+		window.setTimeout(function() {
+			tempNewCard.remove();
+		}, 3000);
+	}
+	else
+	{
+		//If cards are not valid, add all the cards last played into the player's hand
+		for (var i in centerPile)
+		{
+			//Player gets these cards
+			playerArray[0].addCard(centerPile[i]);
+		}
+
+		//Creates a new card and animates the player picking up the entire deck
+		let tempNewCard = new Card("back-red-75", "1").createCard(document.body);
+		tempNewCard.style.position = "absolute";	
+		tempNewCard.classList.add("flyssolveCSS1");
+		tempNewCard.style.animationDuration = "3s";
+		tempNewCard.style.animationDirection = "reverse";
+
+		//Removes the animated card and updates hand
+		window.setTimeout(function() {
+			tempNewCard.remove();
+
+			for (var c=(playerStache.children.length-1); c>=0; c--)
+			{
+				playerStache.children[c].remove();
+			}
+
+			playerArray[0].updateHand(playerStache);
+
+			for (var g = 0; g < playerStache.children.length; g++)
+			{
+				playerStache.children[g].style.pointerEvents = "none"; //Stop player from interacting with keyboard
+			}
+		}, 3000);
+
+		//Resets the center pile
+		centerPile = [];			
+	}
+
+	//Continue the game and resets bs button
+	turnTimer = window.setTimeout(function() {
+		nextTurn();
+		tempBullshitBtn.style.pointerEvents = "auto";
+	}, 5000);
 }
