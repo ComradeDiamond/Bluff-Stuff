@@ -216,6 +216,9 @@ Player.prototype.playCard = function() //Gets rid of the card from your hand
 			lastPlayedCards.push(tempPlayedCard);
 		}
 
+		//Updates center pile length
+		centerPileCardNum.innerHTML = `Number of Cards in Deck: <br />${centerPile.length}`;
+
 		return indexArray.length;
 	}
 	else
@@ -315,9 +318,6 @@ Player.prototype.callBullshit = function(mostProbablePlayer) //AI call bullshit
 		//AI displays the current card count
 		this.aiDisplay.children[2].innerHTML = `${this.hand.length}`;
 
-		//Resets the center pile
-		centerPile = [];
-
 		//Yeet them cards back in the AI hand
 		window.setTimeout(function() {
 			tempNewCard.remove();
@@ -358,10 +358,7 @@ Player.prototype.callBullshit = function(mostProbablePlayer) //AI call bullshit
 				{
 					playerStache.children[g].style.pointerEvents = "none"; //Stop player from interacting with keyboard
 				}
-			}, 3000);
-
-			//Resets the center pile
-			centerPile = [];			
+			}, 3000);		
 		}
 		else
 		{
@@ -386,13 +383,14 @@ Player.prototype.callBullshit = function(mostProbablePlayer) //AI call bullshit
 			tempNewCard.remove();
 			}, 2000);
 
-			//Resets the center pile
-			centerPile = [];
-
 			//Updates AI card display of how much cards the AI has
 			playerArray[currentPlayer].aiDisplay.children[2].innerHTML = `${playerArray[currentPlayer].hand.length}`;
 		}
 	}
+
+	//Resets the center pile
+	centerPile = [];
+	centerPileCardNum.innerHTML = `Number of Cards in Deck: <br />${centerPile.length}`;
 
 	//Continue the game and resets bs button
 	turnTimer = window.setTimeout(function() {

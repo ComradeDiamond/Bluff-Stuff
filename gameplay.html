@@ -219,13 +219,28 @@
 				left: 48%;
 				transform: rotateX(60deg);
 			}
-			#currentNumHTML
+			#currentNumHTML, #centerPileCardNumHTML
 			{
 				position: absolute;
-				top: 47vh;
 				left: 55%;
 				font: 14pt trebuchet ms;
 				color: gold;
+			}
+			#currentNumHTML
+			{
+				top: 47vh;
+			}
+			#centerPileCardNumHTML
+			{
+				top: 53vh;
+			}
+			.returnBtnCSS
+			{
+				position: absolute;
+				top: 2vh;
+				left: 2%;
+				width: 50px;
+				cursor: pointer;
 			}
 		</style>
 		<script src="classes.js"></script>
@@ -236,6 +251,7 @@
 				gameLog.style.visibility = "hidden";
 				playerStache = document.getElementById("playerStacheHTML"); //Will only contain cards
 				currentNum = document.getElementById("currentNumHTML");
+				centerPileCardNum = document.getElementById("centerPileCardNumHTML");
 
 				//Game Variables
 				playBtnState = false;
@@ -274,6 +290,15 @@
 			}
 			function startGame() //Creates the button to start game
 			{
+				//Return Btn sends the player back to the start
+				returnBtn = document.createElement("img");
+				returnBtn.className = "returnBtnCSS";
+				returnBtn.src = "Images/vf_turn.png";
+				returnBtn.addEventListener("click", function() {
+					window.open("index.html", "_self");
+				})
+				document.body.appendChild(returnBtn);
+
 				let tempStartBtn = document.createElement("span");
 				tempStartBtn.id = "startBtnHTML";
 				tempStartBtn.innerHTML = "<br />Start<br />Game";
@@ -306,8 +331,49 @@
 
 				document.body.appendChild(tempStartBtn);
 			}
+			function gameEnd() //If any player wins, display the name and disable all user interactions
+			{
+				if (playerArray[currentPlayer].hand.length == 0)
+				{
+					if (currentPlayer == 0)
+					{
+						alert("You have won the game!");
+					}
+					else
+					{
+						alert(`Player ${currentPlayer} has won the game!`);
+					}
+
+					for (var i=0; i<document.body.children.length; i++)
+					{
+						document.body.children[i].style.pointerEvents = "none";
+					}
+
+					//User can still click on the return button
+					returnBtn.style.pointerEvents = "auto";
+
+					return true;
+				}
+
+				return false;
+			}
 			function nextTurn() //Updates the information needed for the next turn
 			{
+				let didPlayerWin = gameEnd();
+
+				if (didPlayerWin)
+				{
+					try
+					{
+						tempBullshitBtn.style.pointerEvents = "none";
+					}
+					catch
+					{
+						tempPlayBtn.style.pointerEvents = "none";
+					}
+					return; //Stops the game from continuing by breaking at this point
+				}
+
 				currentValue++;
 				if (currentValue == 14) //If needed, reset current value back to 1
 				{
@@ -703,6 +769,8 @@
 									playerStache.children[g].style.pointerEvents = "none"; //Stop player from interacting with keyboard
 								}
 
+								centerPileCardNum.innerHTML = `Number of Cards in Deck: <br />${centerPile.length}`;
+
 								window.setTimeout(function(){
 									configPlayButton();
 									logWipe();
@@ -781,7 +849,6 @@
 								}
 
 							}, 3000);
-							centerPile = [];
 						}
 						else
 						{
@@ -805,12 +872,13 @@
 								tempNewCard.remove();
 							}, 2000);
 
-							//Resets the center pile
-							centerPile = [];
-
 							//Updates AI card display of how much cards the AI has
 							playerArray[currentPlayer].aiDisplay.children[2].innerHTML = `${playerArray[currentPlayer].hand.length}`;
 						}
+
+						//Resets the center pile and card count
+						centerPile = [];
+						centerPileCardNum.innerHTML = `Number of Cards in Deck: <br />${centerPile.length}`;
 
 						//Continue the game and resets bs button
 						turnTimer = window.setTimeout(function() {
@@ -837,5 +905,7 @@
 
 		<img src="Images/back-red-75-1.png" id="centerDeckHTML"/>
 		<span id="currentNumHTML">Current Card: <br /></span>
+		<br />
+		<span id="centerPileCardNumHTML">Number of Cards in Deck: <br />0</span>
 	</body>
 </html>
